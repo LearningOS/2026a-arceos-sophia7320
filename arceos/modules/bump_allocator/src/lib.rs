@@ -1,5 +1,7 @@
 #![no_std]
 
+use core::todo;
+
 use allocator::{BaseAllocator, ByteAllocator, PageAllocator};
 
 /// Early memory allocator
@@ -16,17 +18,40 @@ use allocator::{BaseAllocator, ByteAllocator, PageAllocator};
 /// When it goes down to ZERO, free bytes-used area.
 /// For pages area, it will never be freed!
 ///
-pub struct EarlyAllocator<const SIZE: usize> {}
+
+#[derive(Debug, Default)]
+pub struct EarlyAllocator<const SIZE: usize> {
+    start: usize,
+    size: usize,
+    end: usize,
+    b_pos: usize,
+    p_pos: usize,
+}
+
+struct BlockNode {
+    size: usize,
+    next: usize,
+}
 
 impl<const SIZE: usize> EarlyAllocator<SIZE> {
     pub const fn new() -> Self {
-        Self {}
+        Self {
+            start: 0,
+            size: SIZE,
+            end: SIZE,
+            b_pos: 0,
+            p_pos: SIZE,
+        }
     }
 }
 
 impl<const SIZE: usize> BaseAllocator for EarlyAllocator<SIZE> {
     fn init(&mut self, start: usize, size: usize) {
-        todo!()
+        self.start = start;
+        self.size = size;
+        self.end = start + size;
+        self.b_pos = start;
+        self.p_pos = self.end;
     }
 
     fn add_memory(&mut self, start: usize, size: usize) -> allocator::AllocResult {
@@ -47,7 +72,7 @@ impl<const SIZE: usize> ByteAllocator for EarlyAllocator<SIZE> {
     }
 
     fn total_bytes(&self) -> usize {
-        todo!()
+        self.size
     }
 
     fn used_bytes(&self) -> usize {
@@ -55,7 +80,7 @@ impl<const SIZE: usize> ByteAllocator for EarlyAllocator<SIZE> {
     }
 
     fn available_bytes(&self) -> usize {
-        todo!()
+        self.total_bytes() - self.used_bytes()
     }
 }
 
