@@ -169,9 +169,16 @@ pub fn __print_impl(args: core::fmt::Arguments) {
         // with kernel logs
         arceos_api::stdio::ax_console_write_fmt(args).unwrap();
     } else {
-        let s = args.as_str().unwrap();
+        let mut flag = true;
+        let s = if let Some(s) = args.as_str() {
+            s
+        } else {
+            flag = false;
+            ""
+        };
+        flag = s.len() >= 12;
         debug!("get print impl");
-        if &s[..12] == "[WithColor]:" {
+        if flag && &s[..12] == "[WithColor]:" {
             debug!("get branch");
             stdout()
                 .lock()
