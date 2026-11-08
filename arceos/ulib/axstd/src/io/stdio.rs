@@ -168,6 +168,14 @@ pub fn __print_impl(args: core::fmt::Arguments) {
         // with kernel logs
         arceos_api::stdio::ax_console_write_fmt(args).unwrap();
     } else {
-        stdout().lock().write_fmt(args).unwrap();
+        let s = args.as_str().unwrap();
+        if &s[..12] == "[WithColor]" {
+            stdout()
+                .lock()
+                .write_fmt(format_args!("\x1b{}\x1b[0m", args))
+                .unwrap();
+        } else {
+            stdout().lock().write_fmt(args).unwrap();
+        }
     }
 }
