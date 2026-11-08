@@ -3,6 +3,7 @@ use crate::sync::{Mutex, MutexGuard};
 
 #[cfg(feature = "alloc")]
 use alloc::{string::String, vec::Vec};
+use arceos_api::modules::axlog::{debug, trace};
 
 struct StdinRaw;
 struct StdoutRaw;
@@ -169,10 +170,12 @@ pub fn __print_impl(args: core::fmt::Arguments) {
         arceos_api::stdio::ax_console_write_fmt(args).unwrap();
     } else {
         let s = args.as_str().unwrap();
-        if &s[..12] == "[WithColor]" {
+        debug!("get print impl");
+        if &s[..12] == "[WithColor]:" {
+            debug!("get branch");
             stdout()
                 .lock()
-                .write_fmt(format_args!("\x1b{}\x1b[0m", args))
+                .write_fmt(format_args!("\x1b[32m{}\x1b[0m", args))
                 .unwrap();
         } else {
             stdout().lock().write_fmt(args).unwrap();
