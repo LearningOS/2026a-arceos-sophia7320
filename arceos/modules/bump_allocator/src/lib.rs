@@ -1,6 +1,6 @@
 #![no_std]
 
-use core::todo;
+use core::{simd::Simd, todo};
 
 use allocator::{BaseAllocator, ByteAllocator, PageAllocator};
 
@@ -19,43 +19,56 @@ use allocator::{BaseAllocator, ByteAllocator, PageAllocator};
 /// For pages area, it will never be freed!
 ///
 
-#[derive(Debug, Default)]
 pub struct EarlyAllocator<const SIZE: usize> {
-    start: usize,
-    size: usize,
-    end: usize,
-    b_pos: usize,
-    p_pos: usize,
+    total_size: usize,
+    used_size: usize,
+    inner: BumpAllocator<SIZE>,
 }
 
-struct BlockNode {
-    size: usize,
-    next: usize,
+struct BumpAllocator<const SIZE: usize> {
+    start: usize,
+    b_pos: usize,
+    p_pos: usize,
+    end: usize,
+}
+
+impl<const SIZE: usize> BumpAllocator<SIZE> {
+    pub fn alloc(&mut self, size: usize, align: usize) -> usize {
+        let addr = align_up(self.b_pos, align);
+        let b_pos_new = addr + size;
+
+        if b_pos_new < self.p_pos {}
+    }
 }
 
 impl<const SIZE: usize> EarlyAllocator<SIZE> {
     pub const fn new() -> Self {
         Self {
-            start: 0,
-            size: SIZE,
-            end: SIZE,
-            b_pos: 0,
-            p_pos: SIZE,
+            total_size: 0,
+            used_size: 0,
+            inner: BumpAllocator {
+                start: 0,
+                b_pos: 0,
+                p_pos: 0,
+                end: 0,
+            },
         }
     }
 }
 
 impl<const SIZE: usize> BaseAllocator for EarlyAllocator<SIZE> {
     fn init(&mut self, start: usize, size: usize) {
-        self.start = start;
-        self.size = size;
-        self.end = start + size;
-        self.b_pos = start;
-        self.p_pos = self.end;
+        self.inner = BumpAllocator {
+            start,
+            b_pos: 0,
+            p_pos: 0,
+            end: start + size,
+        }
     }
 
-    fn add_memory(&mut self, start: usize, size: usize) -> allocator::AllocResult {
-        todo!()
+    fn add_memory(&mut self, _start: usize, _size: usize) -> allocator::AllocResult {
+        // ignore this
+        Ok(())
     }
 }
 
@@ -110,4 +123,8 @@ impl<const SIZE: usize> PageAllocator for EarlyAllocator<SIZE> {
     fn available_pages(&self) -> usize {
         todo!()
     }
+}
+
+fn align_up(addr: usize, align: usize) -> usize {
+    (addr + align - 1) & !(align - 1)
 }
