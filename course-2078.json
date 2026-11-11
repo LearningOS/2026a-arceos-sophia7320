@@ -2,7 +2,7 @@
   "schema": 1,
   "courseId": 2078,
   "repository": "LearningOS/2026a-arceos-sophia7320",
-  "commit": "127bae7265126521cc2b2f8fff2e9ea9a4dcaa8a",
+  "commit": "a96c176671951c93d659090ca8b2e6c46f308e8c",
   "score": 100,
   "totalScore": 600,
   "exercises": [
@@ -25,7 +25,7 @@
       "max": 100,
       "score": 0,
       "status": "fail",
-      "exitCode": 0
+      "exitCode": 2
     },
     {
       "name": "support_hashmap",
@@ -50,9 +50,9 @@
     }
   ],
   "student": "sophia7320",
-  "runId": "42526001738",
+  "runId": "42987662901",
   "runAttempt": "1",
   "upload": {
-    "status": "accepted"
+    "status": "pending"
   }
 }
