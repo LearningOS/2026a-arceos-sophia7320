@@ -99,6 +99,7 @@ impl TaskInner {
 
         #[cfg(feature = "tls")]
         let tls = VirtAddr::from(t.tls.tls_ptr() as usize);
+
         #[cfg(not(feature = "tls"))]
         let tls = VirtAddr::from(0);
 

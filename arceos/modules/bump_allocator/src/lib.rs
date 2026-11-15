@@ -1,6 +1,6 @@
 #![no_std]
 
-use core::{simd::Simd, todo};
+use core::{ptr::NonNull, todo};
 
 use allocator::{BaseAllocator, ByteAllocator, PageAllocator};
 
@@ -33,11 +33,32 @@ struct BumpAllocator<const SIZE: usize> {
 }
 
 impl<const SIZE: usize> BumpAllocator<SIZE> {
-    pub fn alloc(&mut self, size: usize, align: usize) -> usize {
+    pub fn balloc(&mut self, size: usize, align: usize) -> usize {
         let addr = align_up(self.b_pos, align);
         let b_pos_new = addr + size;
 
-        if b_pos_new < self.p_pos {}
+        if b_pos_new > self.p_pos || b_pos_new > self.end {
+            return 0;
+        }
+
+        self.b_pos = b_pos_new;
+
+        addr
+    }
+
+    pub fn palloc(&mut self, num_pages: usize, align_pow2: usize) -> usize {
+        if align_pow2 % num_pages != 0 {
+            return 0;
+        }
+
+        let addr = self.p_pos - SIZE * num_pages;
+
+        if addr < self.b_pos || addr < self.start {
+            return 0;
+        }
+
+        self.p_pos = addr;
+        addr
     }
 }
 
@@ -60,8 +81,8 @@ impl<const SIZE: usize> BaseAllocator for EarlyAllocator<SIZE> {
     fn init(&mut self, start: usize, size: usize) {
         self.inner = BumpAllocator {
             start,
-            b_pos: 0,
-            p_pos: 0,
+            b_pos: start,
+            p_pos: start + size,
             end: start + size,
         }
     }
@@ -77,19 +98,28 @@ impl<const SIZE: usize> ByteAllocator for EarlyAllocator<SIZE> {
         &mut self,
         layout: core::alloc::Layout,
     ) -> allocator::AllocResult<core::ptr::NonNull<u8>> {
-        todo!()
+        let (size, align) = (layout.size(), layout.align());
+
+        let addr = self.inner.balloc(size, align);
+
+        if addr != 0 {
+            Ok(unsafe { NonNull::new_unchecked(addr as *mut u8) })
+        } else {
+            Err(allocator::AllocError::NoMemory)
+        }
     }
 
-    fn dealloc(&mut self, pos: core::ptr::NonNull<u8>, layout: core::alloc::Layout) {
-        todo!()
+    fn dealloc(&mut self, _pos: core::ptr::NonNull<u8>, _layout: core::alloc::Layout) {
+        // 不实现 ， 在reset的时候一次性复位
     }
 
     fn total_bytes(&self) -> usize {
-        self.size
+        self.total_size
     }
 
     fn used_bytes(&self) -> usize {
-        todo!()
+        //
+        0
     }
 
     fn available_bytes(&self) -> usize {
@@ -105,7 +135,17 @@ impl<const SIZE: usize> PageAllocator for EarlyAllocator<SIZE> {
         num_pages: usize,
         align_pow2: usize,
     ) -> allocator::AllocResult<usize> {
-        todo!()
+        if num_pages == 0 {
+            return Err(allocator::AllocError::InvalidParam);
+        }
+
+        let addr = self.inner.palloc(num_pages, align_pow2);
+
+        if addr == 0 {
+            Err(allocator::AllocError::NoMemory)
+        } else {
+            Ok(addr)
+        }
     }
 
     fn dealloc_pages(&mut self, pos: usize, num_pages: usize) {

@@ -15,6 +15,7 @@ static CURRENT_DIR: LazyInit<Mutex<VfsNodeRef>> = LazyInit::new();
 
 struct MountPoint {
     path: &'static str,
+    // filesystem
     fs: Arc<dyn VfsOps>,
 }
 
