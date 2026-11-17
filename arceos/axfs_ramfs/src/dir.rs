@@ -165,6 +165,8 @@ impl VfsNodeOps for DirNode {
         }
     }
 
+    fn rename(&self, _src_path: &str, _dst_path: &str) -> VfsResult {}
+
     axfs_vfs::impl_vfs_dir_default! {}
 }
 
