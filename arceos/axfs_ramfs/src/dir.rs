@@ -1,9 +1,12 @@
+use core::str::FromStr;
+
 use alloc::collections::BTreeMap;
 use alloc::sync::{Arc, Weak};
 use alloc::{string::String, vec::Vec};
 
 use axfs_vfs::{VfsDirEntry, VfsNodeAttr, VfsNodeOps, VfsNodeRef, VfsNodeType};
 use axfs_vfs::{VfsError, VfsResult};
+use log::debug;
 use spin::RwLock;
 
 use crate::file::FileNode;
@@ -165,7 +168,31 @@ impl VfsNodeOps for DirNode {
         }
     }
 
-    fn rename(&self, _src_path: &str, _dst_path: &str) -> VfsResult {}
+    fn rename(&self, src_path: &str, dst_path: &str) -> VfsResult {
+        let cursor = self.this.upgrade().unwrap() as Arc<dyn VfsNodeOps>;
+        let node = cursor.clone().lookup(src_path)?.clone();
+        cursor.clone().remove(src_path)?;
+        debug!("remove successfully");
+        debug!("dst_path = {}", dst_path);
+
+        let (dst_path, new_name) = match dst_path.rsplit_once("/") {
+            Some((dir, rest)) => (dir, rest),
+            None => ("", dst_path),
+        };
+
+        let dstdir = cursor.lookup(dst_path)?.clone();
+        debug!("lookup suc");
+
+        dstdir
+            .as_any()
+            .downcast_ref::<DirNode>()
+            .ok_or(VfsError::NotFound)?
+            .children
+            .write()
+            .insert(String::from_str(new_name).unwrap(), node.clone());
+
+        Ok(())
+    }
 
     axfs_vfs::impl_vfs_dir_default! {}
 }

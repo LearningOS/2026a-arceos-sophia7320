@@ -2,6 +2,8 @@
 //!
 //! TODO: it doesn't work very well if the mount points have containment relationships.
 
+use core::str::FromStr;
+
 use alloc::{string::String, sync::Arc, vec::Vec};
 use axerrno::{ax_err, AxError, AxResult};
 use axfs_vfs::{VfsNodeAttr, VfsNodeOps, VfsNodeRef, VfsNodeType, VfsOps, VfsResult};
@@ -134,6 +136,11 @@ impl VfsNodeOps for RootDirectory {
     }
 
     fn rename(&self, src_path: &str, dst_path: &str) -> VfsResult {
+        let dst_path = self.lookup_mounted_fs(dst_path, |_, rest_path| {
+            Ok(String::from_str(rest_path).unwrap())
+        })?;
+
+        let dst_path = dst_path.as_str();
         self.lookup_mounted_fs(src_path, |fs, rest_path| {
             if rest_path.is_empty() {
                 ax_err!(PermissionDenied) // cannot rename mount points
