@@ -55,7 +55,7 @@ extern crate alloc;
 
 #[cfg(feature = "alloc")]
 #[doc(no_inline)]
-pub use alloc::{boxed, collections, format, string, vec};
+pub use alloc::{boxed, collections as other_collections, format, string, vec};
 
 #[doc(no_inline)]
 pub use core::{arch, cell, cmp, hint, marker, mem, ops, ptr, slice, str};
@@ -75,3 +75,34 @@ pub mod time;
 pub mod fs;
 #[cfg(feature = "net")]
 pub mod net;
+
+pub mod collections {
+    use alloc::collections::BTreeMap;
+    use core::ops::{Deref, DerefMut};
+
+    pub struct HashMap<K, V> {
+        inner: BTreeMap<K, V>,
+    }
+
+    impl<K, V> HashMap<K, V> {
+        pub fn new() -> Self {
+            Self {
+                inner: BTreeMap::new(),
+            }
+        }
+    }
+
+    impl<K, V> Deref for HashMap<K, V> {
+        type Target = BTreeMap<K, V>;
+
+        fn deref(&self) -> &Self::Target {
+            &self.inner
+        }
+    }
+
+    impl<K, V> DerefMut for HashMap<K, V> {
+        fn deref_mut(&mut self) -> &mut Self::Target {
+            &mut self.inner
+        }
+    }
+}
