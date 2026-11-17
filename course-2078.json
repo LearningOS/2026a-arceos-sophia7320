@@ -2,7 +2,7 @@
   "schema": 1,
   "courseId": 2078,
   "repository": "LearningOS/2026a-arceos-sophia7320",
-  "commit": "3dede9b07e61930f17d7dbdbdc3f9428d82d6a85",
+  "commit": "2cc2a60ace24ee8f68a41afaa739cf00ea075bc7",
   "score": 200,
   "totalScore": 600,
   "exercises": [
@@ -18,7 +18,7 @@
       "max": 100,
       "score": 0,
       "status": "fail",
-      "exitCode": 0
+      "exitCode": 2
     },
     {
       "name": "alt_alloc",
@@ -39,20 +39,20 @@
       "max": 100,
       "score": 0,
       "status": "fail",
-      "exitCode": 0
+      "exitCode": 2
     },
     {
       "name": "simple_hv",
       "max": 100,
       "score": 0,
-      "status": "timeout",
-      "exitCode": 124
+      "status": "fail",
+      "exitCode": 2
     }
   ],
   "student": "sophia7320",
-  "runId": "43723611860",
+  "runId": "43987001170",
   "runAttempt": "1",
   "upload": {
-    "status": "accepted"
+    "status": "pending"
   }
 }
