@@ -2,16 +2,16 @@
   "schema": 1,
   "courseId": 2078,
   "repository": "LearningOS/2026a-arceos-sophia7320",
-  "commit": "2f215c1a27942dabf9988bd3ff27925f013cd222",
-  "score": 400,
+  "commit": "6630561229359de8178dfbc94114faf32ceddf04",
+  "score": 500,
   "totalScore": 600,
   "exercises": [
     {
       "name": "print_with_color",
       "max": 100,
-      "score": 0,
-      "status": "fail",
-      "exitCode": 2
+      "score": 100,
+      "status": "pass",
+      "exitCode": 0
     },
     {
       "name": "ramfs_rename",
@@ -50,9 +50,9 @@
     }
   ],
   "student": "sophia7320",
-  "runId": "44581306769",
+  "runId": "44584241853",
   "runAttempt": "1",
   "upload": {
-    "status": "accepted"
+    "status": "pending"
   }
 }
