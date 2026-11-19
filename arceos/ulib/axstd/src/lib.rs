@@ -77,7 +77,9 @@ pub mod fs;
 pub mod net;
 
 pub mod collections {
+    extern crate alloc;
     use alloc::collections::BTreeMap;
+    pub use alloc::collections::*;
     use core::ops::{Deref, DerefMut};
 
     pub struct HashMap<K, V> {
