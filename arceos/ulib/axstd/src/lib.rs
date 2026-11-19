@@ -76,6 +76,7 @@ pub mod fs;
 #[cfg(feature = "net")]
 pub mod net;
 
+#[cfg(feature = "alloc")]
 pub mod collections {
     extern crate alloc;
     use alloc::collections::BTreeMap;
