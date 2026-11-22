@@ -2,8 +2,8 @@
   "schema": 1,
   "courseId": 2078,
   "repository": "LearningOS/2026a-arceos-sophia7320",
-  "commit": "6630561229359de8178dfbc94114faf32ceddf04",
-  "score": 500,
+  "commit": "0b4ade3f44650fc53df8c3f12206b5c95861a0ac",
+  "score": 600,
   "totalScore": 600,
   "exercises": [
     {
@@ -44,15 +44,15 @@
     {
       "name": "simple_hv",
       "max": 100,
-      "score": 0,
-      "status": "fail",
+      "score": 100,
+      "status": "pass",
       "exitCode": 0
     }
   ],
   "student": "sophia7320",
-  "runId": "44584241853",
+  "runId": "45005889032",
   "runAttempt": "1",
   "upload": {
-    "status": "accepted"
+    "status": "pending"
   }
 }
